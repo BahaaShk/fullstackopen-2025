@@ -9,69 +9,86 @@ const Statistics = ({
   neutral,
   total,
   average,
-  positive
+  positive,
 }) => {
   if (total === 0) {
     return (
-      <>
-        <h2>give feedback</h2>
-        <button onClick={handleGood}>good</button>
-        <button onClick={handleNeutral}>neutral</button>
-        <button onClick={handleBad}>bad</button>
-        <h2>statistics</h2>
-        <p>no feedback given</p>
-      </>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th colSpan={3}>give feedback</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><button onClick={handleGood}>good</button></td>
+              <td><button onClick={handleNeutral}>neutral</button></td>
+              <td><button onClick={handleBad}>bad</button></td>
+            </tr>
+            <tr>
+              <th colSpan={3}>statistics</th>
+            </tr>
+            <tr>
+              <td colSpan={3}>no feedback given</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     );
   } else
     return (
-      <>
-        <h2>give feedback</h2>
-        <button onClick={handleGood}>good</button>
-        <button onClick={handleNeutral}>neutral</button>
-        <button onClick={handleBad}>bad</button>
-        <h2>statistics</h2>
-   <StatisticLine value={good} text={"good"}/>
-   <StatisticLine value={neutral} text={"neutral"}/>
-   <StatisticLine value={bad} text={"bad"}/>
-   <StatisticLine value={average} text={"average"}/>
-   <StatisticLine value={positive} text={"positive"}/>
-      </>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th colSpan={3}>give feedback</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><Button onClick={handleGood} value={'good'} /></td>
+              <td><Button onClick={handleNeutral} value={'neutral'} /></td>
+              <td><Button onClick={handleBad} value={'bad'} /></td>
+            </tr>
+            <tr>
+              <th colSpan={3}>statistics</th>
+            </tr>
+            <StatisticLine text="good" value={good} />
+            <StatisticLine text="neutral" value={neutral} />
+            <StatisticLine text="bad" value={bad} />
+            <StatisticLine text="all" value={total} />
+            <StatisticLine text="average" value={average} />
+            <StatisticLine text="positive" value={positive + " %"} />
+          </tbody>
+        </table>
+      </div>
     );
 };
 
-const StatisticLine = ({text, value}) => {
+const Button = ({ onClick, value }) => (
+  <button onClick={onClick}>{value}</button>
+);
 
-  return (
-<>
-    <p>{text} {value}</p>
-        {/* <p>neutral {neutral}</p>
-        <p>bad {bad}</p>
-        <p>all {total}</p>
-        <p>average {total === 0 ? 0 : average / total}</p>
-        <p>positive {total === 0 ? 0 : (good / total) * 100} %</p> */}
-      </>
-  )
-}
+const StatisticLine = ({ text, value }) => (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
+);
 
 const App = () => {
-  // save clicks of each button to its own state
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
 
-  const handleGood = () => {
-    setGood((prev) => prev + 1);
-  };
-  const handleNeutral = () => {
-    setNeutral((prev) => prev + 1);
-  };
-  const handleBad = () => {
-    setBad((prev) => prev + 1);
-  };
+  const handleGood = () => setGood((prev) => prev + 1);
+  const handleNeutral = () => setNeutral((prev) => prev + 1);
+  const handleBad = () => setBad((prev) => prev + 1);
 
   const total = good + bad + neutral;
-  const average = (good * 1 + neutral * 0 + bad * -1) / total;
-  const positive = (good / total) *100
+  const average = total === 0 ? 0 : ((good * 1 + neutral * 0 + bad * -1) / total).toFixed(2);
+  const positive = total === 0 ? 0 : ((good / total) * 100).toFixed(1);
 
   return (
     <div>
