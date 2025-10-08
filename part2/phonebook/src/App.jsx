@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from 'axios';
+import servicePerson from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,14 +11,8 @@ const App = () => {
   const [filtered, setFiltered] = useState("");
 
   useEffect(() => {
-    console.log("effect")
-    axios.get('http://localhost:3001/persons').then(response => {
-      console.log('promise fulfilled')
-      setPersons(response.data)
-    })
-  },[])
-  console.log('render', persons.length, 'notes');
-  
+    servicePerson.getAll().then((response) => setPersons(response));
+  }, []);
 
   const filteredData = filtered
     ? persons.filter((person) =>
@@ -26,7 +20,7 @@ const App = () => {
       )
     : persons;
   const handleSubmit = (e) => {
-    e.preventDefault();
+   e.preventDefault();
     const newPerson = {
       name: newName,
       number: newNumber,
@@ -36,21 +30,33 @@ const App = () => {
       setNewName("");
       setNewNumber("");
     } else {
-      setPersons(persons.concat(newPerson));
-      setNewName("");
-      setNewNumber("");
+      servicePerson.create(newPerson).then(response => {
+        setPersons(persons.concat(response));
+        setNewName("");
+        setNewNumber("");
+      }).catch((error) => {
+        alert('error while adding data ', error)
+        
+      })
     }
   };
+
+  
 
   return (
     <div>
       <h2>Phonebook</h2>
-<Filter filtered={filtered} setFiltered={setFiltered} />
+      <Filter filtered={filtered} setFiltered={setFiltered} />
       <h3>add a new</h3>
-<PersonForm handleSubmit={handleSubmit} newName={newName} newNumber={newNumber}
-setNewName={setNewName} setNewNumber={setNewNumber} />
+      <PersonForm
+        handleSubmit={handleSubmit}
+        newName={newName}
+        newNumber={newNumber}
+        setNewName={setNewName}
+        setNewNumber={setNewNumber}
+      />
       <h3>Numbers</h3>
-     <Persons filteredData={filteredData} />
+      <Persons filteredData={filteredData} />
     </div>
   );
 };
