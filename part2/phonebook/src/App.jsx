@@ -10,9 +10,13 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filtered, setFiltered] = useState("");
+  const [successMsg, setSuccessMsg] = useState(null)
 
   useEffect(() => {
-    servicePerson.getAll().then((response) => setPersons(response));
+    servicePerson.getAll().then((response) => setPersons(response)).catch(() => {
+      alert("couldn't fetch data from the server ")
+    
+    })
   }, []);
 
   const filteredData = filtered
@@ -41,7 +45,7 @@ if(!newName || !newNumber) return;
           setFiltered('');
         })
         .catch(err => {
-          alert(`could not update the number ${err} occured`);
+          alert(`could not update the number ${err} occured`)
           setPersons(persons.filter(p => p.id !== existingPerson.id));
         });
     }
@@ -55,13 +59,17 @@ if(!newName || !newNumber) return;
         setNewName('');
         setNewNumber('');
         setFiltered('');
+        setSuccessMsg(`Added ${newName
+}`)
+        setTimeout(() => {
+setSuccessMsg(null)
+        }, 3000)
       })
       .catch(error => {
-        alert('Error while adding data: ' + error.message);
+        alert('Error while adding data: ' + error.message)
       });
   }
 };
-
 
   const removeItem = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
@@ -74,11 +82,20 @@ if(!newName || !newNumber) return;
     }
   };
 
+  const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return <div className="success">{message}</div>
+}
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter filtered={filtered} setFiltered={setFiltered} />
       <h3>add a new</h3>
+     <Notification message={successMsg} />
       <PersonForm
         handleSubmit={handleSubmit}
         newName={newName}
