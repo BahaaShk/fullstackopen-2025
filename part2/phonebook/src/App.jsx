@@ -11,11 +11,14 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filtered, setFiltered] = useState("");
   const [successMsg, setSuccessMsg] = useState(null)
+  const [errorMsg, setErrorMsg] = useState(null)
 
   useEffect(() => {
     servicePerson.getAll().then((response) => setPersons(response)).catch(() => {
-      alert("couldn't fetch data from the server ")
-    
+      setErrorMsg("couldn't fetch data from the server ")
+    setTimeout(() => {
+      setErrorMsg(null)
+    }, 3000);
     })
   }, []);
 
@@ -44,8 +47,11 @@ if(!newName || !newNumber) return;
           setNewNumber('');
           setFiltered('');
         })
-        .catch(err => {
-          alert(`could not update the number ${err} occured`)
+        .catch(() => {
+          setErrorMsg(`Information of ${newName} has already been removed from the server`)
+          setTimeout(() => {
+            setErrorMsg(null)
+          }, 3000);
           setPersons(persons.filter(p => p.id !== existingPerson.id));
         });
     }
@@ -82,20 +88,22 @@ setSuccessMsg(null)
     }
   };
 
-  const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
+  const Notification = ({ successMessage, errMessage }) => {
+    return (
 
-  return <div className="success">{message}</div>
+      <>
+      {successMessage && <div className="success">{successMessage}</div>}
+      {errMessage && <div className="error">{errMessage}</div>}
+    </>
+    )
 }
 
   return (
     <div>
       <h2>Phonebook</h2>
+     <Notification successMessage={successMsg} errMessage={errorMsg} />
       <Filter filtered={filtered} setFiltered={setFiltered} />
       <h3>add a new</h3>
-     <Notification message={successMsg} />
       <PersonForm
         handleSubmit={handleSubmit}
         newName={newName}
