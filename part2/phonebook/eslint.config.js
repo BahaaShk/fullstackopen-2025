@@ -22,8 +22,10 @@ export default defineConfig([
         sourceType: 'module',
       },
     },
-    rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
-    },
+   rules: {
+    'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
+    'react-hooks/exhaustive-deps': 'warn', // Checks effect deps
+  },
   },
 ])
