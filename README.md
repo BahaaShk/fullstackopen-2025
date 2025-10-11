@@ -9,3 +9,6 @@ My solutions for the [Full Stack Open](https://fullstackopen.com) course.
   - unicafe
   - anecdote
 - **part2**
+  - courseinfo
+  - phonebook
+  - countries
