@@ -1,18 +1,23 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import weather from "./services/weather";
 
 function App() {
   const [filter, setFilter] = useState("");
   const [countries, setCountries] = useState([]);
   const [showCountry, setShowCountry] = useState(null);
+  // weather data states
+  const [weatherData, setWeatherData] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState(false);
 
   const BaseUrl = "https://studies.cs.helsinki.fi/restcountries/api/all";
 
   useEffect(() => {
     axios
       .get(BaseUrl)
-      .then((res) => {   
+      .then((res) => {
         setCountries(res.data);
       })
       .catch((error) => {
@@ -23,6 +28,36 @@ function App() {
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(filter.toLowerCase())
   );
+  useEffect(() => {
+    const countryToShow =
+      showCountry ||
+      (filteredCountries.length === 1 ? filteredCountries[0] : null);
+
+    if (
+      !countryToShow ||
+      !countryToShow.capital ||
+      countryToShow.capital.length === 0
+    ) {
+      setWeatherData(null);
+      return;
+    }
+
+    if (weatherData?.name === countryToShow.name.common) return;
+
+    setWeatherLoading(true);
+    setWeatherError(false);
+
+    weather
+      .getWeather(countryToShow.capital[0])
+      .then((data) => {
+        setWeatherData({ ...data, name: countryToShow.name.common }); // store country name
+        setWeatherLoading(false);
+      })
+      .catch(() => {
+        setWeatherError(true);
+        setWeatherLoading(false);
+      });
+  }, [showCountry, filteredCountries]);
 
   return (
     <>
@@ -31,12 +66,11 @@ function App() {
         <input
           type="text"
           value={filter}
-          onChange={(e) =>
-            {
-              setFilter(e.target.value)
-setShowCountry(null)
-            } 
-          }
+          onChange={(e) => {
+            setFilter(e.target.value);
+            setShowCountry(null);
+            setWeatherData(null);
+          }}
         />
       </div>
       <div>
@@ -47,13 +81,13 @@ setShowCountry(null)
             {filteredCountries.map((country, index) => (
               <p key={index}>
                 {country.name.common}
-                <button onClick={() =>{
-                  setShowCountry(country)
-                  console.log(country.name.common);
-                  
-                } 
-                }>Show</button>
-                  
+                <button
+                  onClick={() => {
+                    setShowCountry(country);
+                  }}
+                >
+                  Show
+                </button>
               </p>
             ))}
             {showCountry && (
@@ -68,6 +102,19 @@ setShowCountry(null)
                   ))}
                 </ul>
                 <img src={showCountry.flags.png} alt="flag" width="180" />
+                {weatherLoading && <p>Loading weather...</p>}
+                {weatherError && <p>Could not load weather data.</p>}
+                {weatherData && (
+                  <>
+                    <h3>Weather in {showCountry.capital[0]}</h3>
+                    <p>Temperature: {weatherData.main.temp} Celsius</p>
+                    <img
+                      src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
+                      alt="weather icon"
+                    />
+                    <p>Wind {weatherData.wind.speed} m/s</p>
+                  </>
+                )}
               </div>
             )}
           </>
@@ -83,6 +130,21 @@ setShowCountry(null)
               ))}
             </ul>
             <img src={filteredCountries[0].flags.png} alt="flag" width="180" />
+            {weatherLoading && <p>Loading weather...</p>}
+            {weatherError && <p>Could not load weather data.</p>}
+            {weatherData && (
+              <>
+                <h3>
+                  Weather in {(showCountry || filteredCountries[0]).capital[0]}
+                </h3>
+                <p>Temperature: {weatherData.main.temp} °C</p>
+                <img
+                  src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
+                  alt="weather icon"
+                />
+                <p>Wind {weatherData.wind.speed} m/s</p>
+              </>
+            )}
           </div>
         ) : (
           <p>no matches</p>
