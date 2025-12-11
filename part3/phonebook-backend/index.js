@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-
+const  morgan = require('morgan')
 let persons = [
   {
     id: 1,
@@ -26,8 +26,17 @@ let persons = [
 
 app.use(express.json())
 
+morgan.token("body", (req) => {
+  return req.method === "POST" ? JSON.stringify(req.body) : ""
+})
+
+const customFormat = ":method :url :status :res[content-length] - :response-time ms :body"
+
+app.use(morgan(customFormat))
+
 app.post('/api/persons',(request,response) => {
   const body = request.body;
+
 
 if(!body.name) {
   return response.status(400).json({error:"name is missing"})
