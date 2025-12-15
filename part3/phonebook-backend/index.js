@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-const  morgan = require('morgan')
-const cors = require("cors")
+const morgan = require("morgan");
+const cors = require("cors");
 
 let persons = [
   {
@@ -26,44 +26,44 @@ let persons = [
   },
 ];
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 morgan.token("body", (req) => {
-  return req.method === "POST" ? JSON.stringify(req.body) : ""
-})
+  return req.method === "POST" ? JSON.stringify(req.body) : "";
+});
 
-const customFormat = ":method :url :status :res[content-length] - :response-time ms :body"
+const customFormat =
+  ":method :url :status :res[content-length] - :response-time ms :body";
 
-app.use(morgan(customFormat))
+app.use(morgan(customFormat));
 
-app.post('/api/persons',(request,response) => {
+app.post("/api/persons", (request, response) => {
   const body = request.body;
 
-
-if(!body.name) {
-  return response.status(400).json({error:"name is missing"})
-}
-if(!body.number) {
-  return response.status(400).json({error:"number is missing"})
-}
-
-const nameExists = persons.find((person) => person.name === body.name)
-
-if(nameExists){
-  return response.status(400).json({error:"name must be unique"})
-}
-
-  const person = {
-    name:body.name,
-    number:body.number,
-    id:Math.floor(Math.random() * 1000)
+  if (!body.name) {
+    return response.status(400).json({ error: "name is missing" });
+  }
+  if (!body.number) {
+    return response.status(400).json({ error: "number is missing" });
   }
 
-  persons = persons.concat(person)
+  const nameExists = persons.find((person) => person.name === body.name);
 
-  response.json(person)
-})
+  if (nameExists) {
+    return response.status(400).json({ error: "name must be unique" });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: Math.floor(Math.random() * 1000),
+  };
+
+  persons = persons.concat(person);
+
+  response.json(person);
+});
 
 app.get("/info", (request, response) => {
   const time = new Date();
