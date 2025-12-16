@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path")
 
 let persons = [
   {
@@ -28,6 +29,8 @@ let persons = [
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("dist"))
+
 
 morgan.token("body", (req) => {
   return req.method === "POST" ? JSON.stringify(req.body) : "";
@@ -86,12 +89,17 @@ app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
 
+
+
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
-
   response.status(204).end();
 });
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"))
+})
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
