@@ -96,7 +96,7 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.get("*", (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"))
 })
 
