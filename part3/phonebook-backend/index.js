@@ -32,8 +32,8 @@ app.use(express.json());
 app.use(express.static("dist"))
 
 
-morgan.token("body", (req) => {
-  return req.method === "POST" ? JSON.stringify(req.body) : "";
+morgan.token("body", (request) => {
+  return request.method === "POST" ? JSON.stringify(request.body) : "";
 });
 
 const customFormat =
