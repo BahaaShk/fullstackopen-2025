@@ -3,6 +3,7 @@ const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path")
+const mongoose = require("mongoose")
 
 let persons = [
   {
@@ -31,6 +32,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("dist"))
 
+const password = process.argv[2]
+const url = `mongodb+srv://bahaashk_db_user:${password}@cluster0.sppub1o.mongodb.net/phonebook?appName=Cluster0`
+
+
+mongoose.set("strictQuery", false)
+mongoose.connect(url)
+
+// 4️⃣ Schema
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+})
+
+// 5️⃣ Model
+const Person = mongoose.model("Person", personSchema)
 
 morgan.token("body", (request) => {
   return request.method === "POST" ? JSON.stringify(request.body) : "";
@@ -86,7 +102,9 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+   Person.find({}).then(persons => {
+    response.json(persons)
+   })
 });
 
 app.delete("/api/persons/:id", (request, response) => {
