@@ -5,10 +5,9 @@ const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 
-app.use(cors());
 app.use(express.static("dist"));
 app.use(express.json());
-app.use(requestLogger);
+app.use(cors());
 
 const Person = require("./models/person");
 
