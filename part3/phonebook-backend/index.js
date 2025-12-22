@@ -24,7 +24,6 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
-app.use(unknownEndpoint);
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
@@ -36,7 +35,6 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-app.use(errorHandler);
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
@@ -65,11 +63,16 @@ app.post("/api/persons", (request, response) => {
     });
 });
 
-app.get("/info", (request, response) => {
-  const time = new Date();
-  response.send(`<p>Phonebook has info for ${persons.length} people</p>
-     <p>${time}</p>`);
+app.get("/info", (request, response, next) => {
+  Person.countDocuments({})
+    .then(count => {
+      const time = new Date();
+      response.send(`<p>Phonebook has info for ${count} people</p>
+                    <p>${time}</p>`);
+    })
+    .catch(error => next(error));
 });
+
 
 app.get("/api/persons/:id", (request, response, next) => {
   Person.findById(request.params.id)
@@ -115,6 +118,9 @@ app.put('/api/persons/:id', (request, response, next) => {
     })
     .catch(error => next(error))
 })
+
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.get(/.*/, (req, res) => {
