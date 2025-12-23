@@ -40,11 +40,11 @@ app.post("/api/persons", (request, response) => {
   const body = request.body;
 
   if (!body.name) {
-    return response.status(400).json({ error: "name is missing" });
+    return response.status(400).json({ error: "name is missing, please add a valid name" });
   }
 
   if (!body.number) {
-    return response.status(400).json({ error: "number is missing" });
+    return response.status(400).json({ error: "number is missing, please add your number" });
   }
 
   const person = new Person({
@@ -59,7 +59,7 @@ app.post("/api/persons", (request, response) => {
     })
     .catch((error) => {
       console.error(error);
-      response.status(500).json({ error: "failed to save person" });
+      response.status(500).json({ error: "failed to save the person" });
     });
 });
 
@@ -128,5 +128,5 @@ app.get(/.*/, (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on the port ${PORT}`);
 });
