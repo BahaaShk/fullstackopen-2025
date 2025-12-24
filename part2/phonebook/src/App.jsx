@@ -72,7 +72,7 @@ setSuccessMsg(null)
         }, 3000)
       })
       .catch(error => {
-        alert('Error while adding data: ' + error.message)
+         console.log(error.response.data.error)
       });
   }
 };
