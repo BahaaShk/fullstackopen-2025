@@ -72,7 +72,10 @@ setSuccessMsg(null)
         }, 3000)
       })
       .catch(error => {
-         console.log(error.response.data.error)
+         setErrorMsg(error.response.data.error);
+         setTimeout(() => {
+setErrorMsg(null)
+        }, 3000)
       });
   }
 };
