@@ -1,8 +1,8 @@
-const mongoose = require("mongoose")
+const mongoose = require('mongoose')
 
 // 1️⃣ Check arguments
 if (process.argv.length < 3) {
-  console.log("give password as argument")
+  console.log('give password as argument')
   process.exit(1)
 }
 
@@ -10,7 +10,7 @@ const password = process.argv[2]
 const url = `mongodb+srv://bahaashk_db_user:${password}@cluster0.sppub1o.mongodb.net/phonebook?appName=Cluster0`
 
 
-mongoose.set("strictQuery", false)
+mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
 // 4️⃣ Schema
@@ -20,11 +20,11 @@ const personSchema = new mongoose.Schema({
 })
 
 // 5️⃣ Model
-const Person = mongoose.model("Person", personSchema)
+const Person = mongoose.model('Person', personSchema)
 
 // 🟢 CASE A: Only password → list all entries
 if (process.argv.length === 3) {
-  console.log("phonebook:")
+  console.log('phonebook:')
 
   Person.find({}).then(persons => {
     persons.forEach(person => {
