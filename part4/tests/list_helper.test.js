@@ -68,3 +68,42 @@ describe("total likes", () => {
     assert.strictEqual(result, 36);
   });
 });
+
+describe('favorite blog', () => {
+  test('of empty list is null', () => {
+    const result = listHelper.favoriteBlog([]);
+    assert.strictEqual(result, null);
+  });
+
+  test('when list has only one blog equals that blog', () => {
+    const listWithOneBlog = [
+      {
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        likes: 5,
+      },
+    ];
+
+    const result = listHelper.favoriteBlog(listWithOneBlog);
+    assert.deepStrictEqual(result, {
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      likes: 5,
+    });
+  });
+
+  test('of a bigger list is the one with most likes', () => {
+    const blogs = [
+      { title: 'React patterns', author: 'Michael Chan', likes: 7 },
+      { title: 'Canonical string reduction', author: 'Edsger W. Dijkstra', likes: 12 },
+      { title: 'First class tests', author: 'Robert C. Martin', likes: 10 },
+    ];
+
+    const result = listHelper.favoriteBlog(blogs);
+    assert.deepStrictEqual(result, {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
+    });
+  });
+});
